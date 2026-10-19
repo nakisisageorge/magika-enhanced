@@ -1,0 +1,189 @@
+# Healthcare Content Types
+# Custom rules for healthcare data formats (HL7, FHIR, DICOM, etc.)
+
+name: "healthcare"
+version: "1.0"
+description: "Content type rules for healthcare data exchange formats"
+metadata:
+  domain: "healthcare"
+  standards: ["HL7", "FHIR", "DICOM", "CDA", "CCD"]
+
+rules:
+  - name: "hl7_v2_message"
+    label: "HL7_V2_MESSAGE"
+    group: "healthcare"
+    mime_type: "application/hl7-v2"
+    extensions: [".hl7", ".hl7v2", ".oru", ".adt", ".orm"]
+    regex: "^MSH\\|[^\\|]*\\|[^\\|]*\\|[^\\|]*\\|[^\\|]*\\|[^\\|]*\\|"
+    description: "HL7 Version 2.x message (ADT, ORM, ORU, etc.)"
+    is_text: true
+    priority: 100
+    metadata:
+      standard: "HL7 v2"
+      versions: ["2.3", "2.3.1", "2.4", "2.5", "2.5.1", "2.6", "2.7", "2.8"]
+
+  - name: "hl7_v3_message"
+    label: "HL7_V3_MESSAGE"
+    group: "healthcare"
+    mime_type: "application/hl7-v3+xml"
+    extensions: [".hl7v3", ".xml"]
+    magic_bytes:
+      offset: 0
+      pattern: "3c3f786d6c"  # "<?xml" in hex
+    regex: "<([^:]+:)?(POPR_IN000001|MCCI_IN000002|PRPA_IN101101|COCT_MT)[^>]*>"
+    description: "HL7 Version 3 XML message"
+    is_text: true
+    priority: 95
+    metadata:
+      standard: "HL7 v3"
+
+  - name: "fhir_json_bundle"
+    label: "FHIR_JSON_BUNDLE"
+    group: "healthcare"
+    mime_type: "application/fhir+json"
+    extensions: [".fhir.json", ".bundle.json"]
+    regex: '"resourceType"\\s*:\\s*"Bundle"'
+    description: "FHIR JSON Bundle resource"
+    is_text: true
+    priority: 100
+    metadata:
+      standard: "FHIR"
+      formats: ["R4", "R4B", "R5"]
+
+  - name: "fhir_xml_bundle"
+    label: "FHIR_XML_BUNDLE"
+    group: "healthcare"
+    mime_type: "application/fhir+xml"
+    extensions: [".fhir.xml", ".bundle.xml"]
+    magic_bytes:
+      offset: 0
+      pattern: "3c3f786d6c"  # "<?xml"
+    regex: "<Bundle[^>]*xmlns=\"http://hl7.org/fhir\""
+    description: "FHIR XML Bundle resource"
+    is_text: true
+    priority: 95
+    metadata:
+      standard: "FHIR"
+
+  - name: "fhir_json_patient"
+    label: "FHIR_JSON_PATIENT"
+    group: "healthcare"
+    mime_type: "application/fhir+json"
+    extensions: [".patient.json"]
+    regex: '"resourceType"\\s*:\\s*"Patient"'
+    description: "FHIR JSON Patient resource"
+    is_text: true
+    priority: 90
+    metadata:
+      standard: "FHIR"
+
+  - name: "dicom_file"
+    label: "DICOM_FILE"
+    group: "healthcare"
+    mime_type: "application/dicom"
+    extensions: [".dcm", ".dicom"]
+    magic_bytes:
+      offset: 128
+      pattern: "4449434d"  # "DICM" at offset 128
+    description: "DICOM medical imaging file"
+    is_text: false
+    priority: 100
+    metadata:
+      standard: "DICOM"
+      modality: ["CT", "MR", "US", "XA", "RF", "MG", "PT"]
+
+  - name: "dicom_dir"
+    label: "DICOM_DIR"
+    group: "healthcare"
+    mime_type: "application/dicom-dir"
+    extensions: [".dicomdir"]
+    magic_bytes:
+      offset: 128
+      pattern: "4449434d"
+    regex: "DICOMDIR"
+    description: "DICOM Directory file (DICOMDIR)"
+    is_text: false
+    priority: 95
+    metadata:
+      standard: "DICOM"
+
+  - name: "cda_document"
+    label: "CDA_DOCUMENT"
+    group: "healthcare"
+    mime_type: "text/xml; profile=cda"
+    extensions: [".cda", ".cda.xml", ".ccd.xml"]
+    magic_bytes:
+      offset: 0
+      pattern: "3c3f786d6c"  # "<?xml"
+    regex: "<ClinicalDocument[^>]*xmlns=\"urn:hl7-org:v3\""
+    description: "HL7 CDA (Clinical Document Architecture) document"
+    is_text: true
+    priority: 95
+    metadata:
+      standard: "CDA"
+      types: ["CCD", "Discharge Summary", "Referral", "Consultation"]
+
+  - name: "ccd_document"
+    label: "CCD_DOCUMENT"
+    group: "healthcare"
+    mime_type: "text/xml; profile=ccd"
+    extensions: [".ccd", ".ccd.xml"]
+    magic_bytes:
+      offset: 0
+      pattern: "3c3f786d6c"
+    regex: "<ClinicalDocument[^>]*templateId[^>]*2\\.16\\.840\\.1\\.113883\\.10\\.20\\.22\\.1\\.1"
+    description: "Continuity of Care Document (CCD) - CDA constrained"
+    is_text: true
+    priority: 95
+    metadata:
+      standard: "CDA/CCD"
+
+  - name: "x12_837_claim"
+    label: "X12_837_CLAIM"
+    group: "healthcare"
+    mime_type: "application/x12"
+    extensions: [".x12", ".837", ".edi"]
+    regex: "^ISA\\*[^\\*]*\\*[^\\*]*\\*"
+    description: "X12 837 Health Care Claim"
+    is_text: true
+    priority: 90
+    metadata:
+      standard: "X12"
+      transaction: "837"
+
+  - name: "x12_835_payment"
+    label: "X12_835_PAYMENT"
+    group: "healthcare"
+    mime_type: "application/x12"
+    extensions: [".x12", ".835", ".edi"]
+    regex: "^ISA\\*[^\\*]*\\*[^\\*]*\\*.*\\*835\\*"
+    description: "X12 835 Health Care Claim Payment/Advice"
+    is_text: true
+    priority: 90
+    metadata:
+      standard: "X12"
+      transaction: "835"
+
+  - name: "ncpdp_telecom"
+    label: "NCPDP_TELECOM"
+    group: "healthcare"
+    mime_type: "application/ncpdp"
+    extensions: [".ncpdp", ".tel"]
+    regex: "^[0-9]{2}[A-Z]{2}"
+    description: "NCPDP Telecommunication Standard (pharmacy claims)"
+    is_text: true
+    priority: 85
+    metadata:
+      standard: "NCPDP"
+
+  - name: "csv_clinical_data"
+    label: "CSV_CLINICAL_DATA"
+    group: "healthcare"
+    mime_type: "text/csv; profile=clinical"
+    extensions: [".clinical.csv", ".patient.csv"]
+    regex: "(?i)(patient_id|mrn|encounter_id|diagnosis|icd10|cpt|ndc|loinc)"
+    description: "Clinical data CSV with standard healthcare identifiers"
+    is_text: true
+    priority: 70
+    metadata:
+      format: "CSV"

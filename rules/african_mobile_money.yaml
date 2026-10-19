@@ -1,0 +1,217 @@
+# African Mobile Money Content Types
+# Custom rules for mobile money transaction formats used across Africa
+
+name: "african_mobile_money"
+version: "1.0"
+description: "Content type rules for African mobile money platforms (M-Pesa, Airtel Money, MTN MoMo, Orange Money)"
+metadata:
+  region: "Africa"
+  domain: "fintech"
+  platforms: ["mpesa", "airtel_money", "mtn_momo", "orange_money"]
+
+rules:
+  - name: "mpesa_stk_push"
+    label: "MPESA_STK_PUSH"
+    group: "finance"
+    mime_type: "application/x-mpesa-stk"
+    extensions: [".stk", ".mpesa-stk"]
+    magic_bytes:
+      offset: 0
+      pattern: "4d50455341"  # "MPESA" in hex
+    description: "M-Pesa STK Push request/response"
+    is_text: false
+    priority: 100
+    metadata:
+      country: "KE"
+      platform: "mpesa"
+
+  - name: "mpesa_c2b_transaction"
+    label: "MPESA_C2B_TRANSACTION"
+    group: "finance"
+    mime_type: "application/x-mpesa-c2b"
+    extensions: [".c2b", ".mpesa-c2b"]
+    regex: "^C2B\\|\\d{10}\\|\\d+\\|"
+    description: "M-Pesa Customer-to-Business transaction"
+    is_text: true
+    priority: 95
+    metadata:
+      country: "KE"
+      platform: "mpesa"
+
+  - name: "mpesa_b2c_transaction"
+    label: "MPESA_B2C_TRANSACTION"
+    group: "finance"
+    mime_type: "application/x-mpesa-b2c"
+    extensions: [".b2c", ".mpesa-b2c"]
+    regex: "^B2C\\|\\d{10}\\|\\d+\\|"
+    description: "M-Pesa Business-to-Customer transaction"
+    is_text: true
+    priority: 95
+    metadata:
+      country: "KE"
+      platform: "mpesa"
+
+  - name: "airtel_money_transaction"
+    label: "AIRTEL_MONEY_TRANSACTION"
+    group: "finance"
+    mime_type: "application/x-airtel-money"
+    extensions: [".amt", ".airtel-money"]
+    magic_bytes:
+      offset: 0
+      pattern: "414d54"  # "AMT" in hex
+    description: "Airtel Money transaction record"
+    is_text: false
+    priority: 90
+    metadata:
+      countries: ["KE", "UG", "TZ", "RW", "MW", "ZM"]
+      platform: "airtel_money"
+
+  - name: "airtel_money_log"
+    label: "AIRTEL_MONEY_LOG"
+    group: "finance"
+    mime_type: "text/x-airtel-money-log"
+    extensions: [".aml", ".airtel-log"]
+    regex: "^AML\\|\\d{14}\\|\\w+\\|"
+    description: "Airtel Money transaction log entry"
+    is_text: true
+    priority: 85
+    metadata:
+      platform: "airtel_money"
+
+  - name: "mtn_momo_transaction"
+    label: "MTN_MOMO_TRANSACTION"
+    group: "finance"
+    mime_type: "application/x-mtn-momo"
+    extensions: [".momo", ".mtn-momo"]
+    magic_bytes:
+      offset: 0
+      pattern: "4d4f4d4f"  # "MOMO" in hex
+    description: "MTN Mobile Money transaction"
+    is_text: false
+    priority: 90
+    metadata:
+      countries: ["UG", "GH", "CM", "CI", "BF", "SN", "ML", "GN", "CG", "CD", "ZM", "RW", "BJ", "TG", "LR", "SL", "GM", "GW", "SN"]
+      platform: "mtn_momo"
+
+  - name: "mtn_momo_api_request"
+    label: "MTN_MOMO_API_REQUEST"
+    group: "finance"
+    mime_type: "application/json; profile=mtn-momo"
+    extensions: [".momo-req", ".momo-api"]
+    regex: '"(referenceId|externalId|payer|payee)":\\s*"[^"]*"'
+    description: "MTN MoMo API request (collection/disbursement)"
+    is_text: true
+    priority: 85
+    metadata:
+      platform: "mtn_momo"
+
+  - name: "orange_money_transaction"
+    label: "ORANGE_MONEY_TRANSACTION"
+    group: "finance"
+    mime_type: "application/x-orange-money"
+    extensions: [".omt", ".orange-money"]
+    magic_bytes:
+      offset: 0
+      pattern: "4f4d"  # "OM" in hex
+    description: "Orange Money transaction record"
+    is_text: false
+    priority: 90
+    metadata:
+      countries: ["CI", "SN", "ML", "BF", "GN", "BJ", "TG", "CM", "CF", "CD", "CG", "GA", "GQ", "KM", "MG", "MU", "RE", "YT"]
+      platform: "orange_money"
+
+  - name: "orange_money_ussd_log"
+    label: "ORANGE_MONEY_USSD_LOG"
+    group: "finance"
+    mime_type: "text/x-orange-money-ussd"
+    extensions: [".oml", ".om-ussd"]
+    regex: "^OM\\|\\d+\\|\\w+\\|"
+    description: "Orange Money USSD transaction log"
+    is_text: true
+    priority: 85
+    metadata:
+      platform: "orange_money"
+
+  - name: "pesa_link_transaction"
+    label: "PESALINK_TRANSACTION"
+    group: "finance"
+    mime_type: "application/x-pesalink"
+    extensions: [".plink", ".pesalink"]
+    regex: "^PESALINK\\|\\d{10}\\|"
+    description: "PesaLink interbank transfer"
+    is_text: true
+    priority: 80
+    metadata:
+      country: "KE"
+      platform: "pesalink"
+
+  - name: "tigo_pesa_transaction"
+    label: "TIGO_PESA_TRANSACTION"
+    group: "finance"
+    mime_type: "application/x-tigo-pesa"
+    extensions: [".tpesa", ".tigo-pesa"]
+    magic_bytes:
+      offset: 0
+      pattern: "5450455341"  # "TPESA" in hex
+    description: "Tigo Pesa transaction (Tanzania)"
+    is_text: false
+    priority: 85
+    metadata:
+      country: "TZ"
+      platform: "tigo_pesa"
+
+  - name: "halo_pesa_transaction"
+    label: "HALO_PESA_TRANSACTION"
+    group: "finance"
+    mime_type: "application/x-halo-pesa"
+    extensions: [".hpesa", ".halo-pesa"]
+    regex: "^HALO\\|\\d+\\|"
+    description: "HaloPesa transaction (Tanzania)"
+    is_text: true
+    priority: 80
+    metadata:
+      country: "TZ"
+      platform: "halo_pesa"
+
+  - name: "ecocash_transaction"
+    label: "ECOCASH_TRANSACTION"
+    group: "finance"
+    mime_type: "application/x-ecocash"
+    extensions: [".ecash", ".ecocash"]
+    magic_bytes:
+      offset: 0
+      pattern: "45434f43415348"  # "ECOCASH" in hex
+    description: "EcoCash transaction (Zimbabwe)"
+    is_text: false
+    priority: 90
+    metadata:
+      country: "ZW"
+      platform: "ecocash"
+
+  - name: "mukuru_transaction"
+    label: "MUKURU_TRANSACTION"
+    group: "finance"
+    mime_type: "application/x-mukuru"
+    extensions: [".muk", ".mukuru"]
+    regex: "^MUK\\|\\w+\\|"
+    description: "Mukuru remittance transaction"
+    is_text: true
+    priority: 80
+    metadata:
+      countries: ["ZW", "ZA", "MW", "MZ", "BW", "LS", "SZ", "NA"]
+      platform: "mukuru"
+
+  - name: "wave_transaction"
+    label: "WAVE_TRANSACTION"
+    group: "finance"
+    mime_type: "application/x-wave"
+    extensions: [".wav", ".wave"]
+    magic_bytes:
+      offset: 0
+      pattern: "57415645"  # "WAVE" in hex
+    description: "Wave Mobile Money transaction (Senegal, Ivory Coast)"
+    is_text: false
+    priority: 85
+    metadata:
+      countries: ["SN", "CI"]
+      platform: "wave"

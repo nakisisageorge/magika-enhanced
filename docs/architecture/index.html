@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>magika-enhanced Architecture Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #0d1117;
+            color: #e6edf3;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #30363d;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin: 0 0 10px;
+            background: linear-gradient(90deg, #58a6ff, #a371f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            color: #8b949e;
+            font-size: 1.1rem;
+        }
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background: #238636;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #2ea043;
+        }
+        button.secondary {
+            background: #30363d;
+            border: 1px solid #484f58;
+        }
+        button.secondary:hover {
+            background: #484f58;
+        }
+        .diagram-container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            overflow: auto;
+            min-height: 600px;
+        }
+        .mermaid {
+            text-align: center;
+        }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 16px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        .details-panel {
+            margin-top: 30px;
+            padding: 20px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+        .details-panel h2 {
+            margin-top: 0;
+            font-size: 1.3rem;
+        }
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .component-card {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .component-card h3 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+            color: #58a6ff;
+        }
+        .component-card p {
+            margin: 0;
+            color: #8b949e;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .flow-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .flow-sync { background: #f78166; color: #0d1117; }
+        .flow-async { background: #a371f7; color: #0d1117; }
+        .flow-mcp { background: #39d353; color: #0d1117; }
+        .flow-core { background: #d29922; color: #0d1117; }
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .controls { flex-direction: column; align-items: center; }
+            button { width: 100%; max-width: 300px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>magika-enhanced Architecture</h1>
+            <p class="subtitle">Interactive visualization of the enhanced AI file detection platform</p>
+        </header>
+
+        <div class="controls">
+            <button onclick="mermaid.run({nodes: document.querySelectorAll('.mermaid')})">🔄 Re-render</button>
+            <button class="secondary" onclick="zoomIn()">🔍 Zoom In</button>
+            <button class="secondary" onclick="zoomOut()">🔎 Zoom Out</button>
+            <button class="secondary" onclick="resetZoom()">⌂ Reset</button>
+            <button class="secondary" onclick="downloadSVG()">💾 Download SVG</button>
+        </div>
+
+        <div class="diagram-container">
+            <div class="mermaid" id="architecture-diagram">
+flowchart TB
+    subgraph USER["👤 User Interfaces"]
+        CLI["🖥️ CLI\nmagika-enhanced"]
+        PY_SYNC["🐍 Sync Python API\nMagika class"]
+        PY_ASYNC["⚡ Async Python API\nMagikaAsync class"]
+        MCP_STDIO["🤖 MCP stdio\nClaude Code, Cursor"]
+        MCP_HTTP["🌐 MCP HTTP/SSE\nWeb Agents"]
+    end
+
+    subgraph ENHANCED["🔧 magika-enhanced Core"]
+        CACHE_SYNC["💾 Sync LRU Cache\n+ Custom Rules"]
+        CACHE_ASYNC["💾 Async LRU Cache\n+ asyncio.Lock"]
+        RULES_ENGINE["📋 Custom Rules Engine\nYAML • Regex • Magic Bytes"]
+        BENCHMARK["📊 Benchmark Runner\nPerf • Memory • Comparison"]
+    end
+
+    subgraph UPSTREAM["📦 Upstream magika (Google)"]
+        MAGIKA_PYO3["🔗 PyO3 Bindings\nPython ↔ Rust"]
+        MAGIKA_RUST["⚙️ Rust Core\ntract ONNX Runtime"]
+        MAGIKA_MODEL["🧠 ONNX Model\n~3MB • 200+ Types"]
+        MAGIKA_CLI["🦀 Rust CLI\nmagika-cli"]
+    end
+
+    subgraph RULES["📁 Domain Rule Sets"]
+        RULE_AFRICA["🌍 African Mobile Money\n12 rules • M-Pesa, MoMo, Wave"]
+        RULE_HEALTH["🏥 Healthcare\n10 rules • HL7, FHIR, DICOM"]
+        RULE_LOGISTICS["📦 Logistics\n16 rules • EDIFACT, GS1, eBL"]
+    end
+
+    %% Connections
+    CLI --> PY_SYNC
+    PY_SYNC --> CACHE_SYNC
+    PY_ASYNC --> CACHE_ASYNC
+    MCP_STDIO --> MCP_SERVER["🔌 MCP Server\nMagikaMCPServer"]
+    MCP_HTTP --> MCP_SERVER
+    MCP_SERVER --> CACHE_ASYNC
+
+    CACHE_SYNC -->|"cache miss\nthread pool"| MAGIKA_PYO3
+    CACHE_ASYNC -->|"cache miss\nrun_in_executor"| MAGIKA_PYO3
+    MCP_SERVER -->|"async identify"| CACHE_ASYNC
+
+    RULES_ENGINE -.->|"loaded at init\nhot-reload supported"| CACHE_SYNC
+    RULES_ENGINE -.->|"loaded at init\nhot-reload supported"| CACHE_ASYNC
+
+    RULE_AFRICA --> RULES_ENGINE
+    RULE_HEALTH --> RULES_ENGINE
+    RULE_LOGISTICS --> RULES_ENGINE
+
+    MAGIKA_PYO3 --> MAGIKA_RUST
+    MAGIKA_RUST --> MAGIKA_MODEL
+    MAGIKA_CLI -.->|"standalone"| MAGIKA_RUST
+
+    BENCHMARK -.->|"benchmarks"| PY_SYNC
+    BENCHMARK -.->|"benchmarks"| PY_ASYNC
+    BENCHMARK -.->|"compares"| EXTERNAL["🔄 External Tools\npython-magic • mimetypes • file(1)"]
+
+    %% Styling
+    classDef user fill:#1f6feb,color:#fff,stroke:#388bfd,stroke-width:2px
+    classDef enhanced fill:#a371f7,color:#fff,stroke:#d2a8ff,stroke-width:2px
+    classDef upstream fill:#238636,color:#fff,stroke:#2ea043,stroke-width:2px
+    classDef rules fill:#d29922,color:#0d1117,stroke:#e3b341,stroke-width:2px
+    classDef external fill:#f78166,color:#0d1117,stroke:#ff9b7a,stroke-width:2px,stroke-dasharray: 5 5
+
+    class CLI,PY_SYNC,PY_ASYNC,MCP_STDIO,MCP_HTTP user
+    class CACHE_SYNC,CACHE_ASYNC,RULES_ENGINE,BENCHMARK,MCP_SERVER enhanced
+    class MAGIKA_PYO3,MAGIKA_RUST,MAGIKA_MODEL,MAGIKA_CLI upstream
+    class RULE_AFRICA,RULE_HEALTH,RULE_LOGISTICS rules
+    class EXTERNAL external
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="legend-color" style="background:#1f6feb"></div><span>User Interfaces</span></div>
+            <div class="legend-item"><div class="legend-color" style="background:#a371f7"></div><span>magika-enhanced Core</span></div>
+            <div class="legend-item"><div class="legend-color" style="background:#238636"></div><span>Upstream magika (Google)</span></div>
+            <div class="legend-item"><div class="legend-color" style="background:#d29922"></div><span>Domain Rule Sets</span></div>
+            <div class="legend-item"><div class="legend-color" style="background:#f78166"></div><span>External Comparison Tools</span></div>
+            <div class="legend-item"><div class="legend-color" style="background:#161b22;border:1px solid #484f58"></div><span>Data Flow (solid)</span></div>
+            <div class="legend-item"><div class="legend-color" style="background:transparent;border:1px dashed #d29922;height:16px;width:16px"></div><span>Config Load (dashed)</span></div>
+        </div>
+
+        <div class="details-panel">
+            <h2>🏗️ Component Details</h2>
+            <div class="component-grid">
+                <div class="component-card">
+                    <span class="flow-badge flow-sync">Sync Flow</span>
+                    <h3>🐍 Sync API (Magika)</h3>
+                    <p>Drop-in replacement for upstream magika. Adds LRU caching (configurable size), custom rules integration, and full API compatibility. Used by CLI and sync Python code.</p>
+                </div>
+                <div class="component-card">
+                    <span class="flow-badge flow-async">Async Flow</span>
+                    <h3>⚡ Async API (MagikaAsync)</h3>
+                    <p>Full async/await support with configurable concurrency (Semaphore). Uses thread pool executor for upstream blocking calls. Supports streaming, directory scanning, and async cache with asyncio.Lock.</p>
+                </div>
+                <div class="component-card">
+                    <span class="flow-badge flow-mcp">MCP Flow</span>
+                    <h3>🤖 MCP Server</h3>
+                    <p>Implements Model Context Protocol. Exposes 5 tools: identify_file, identify_bytes, identify_paths, get_content_types, load_custom_rules. Transports: stdio (Claude Code) and HTTP/SSE (web agents).</p>
+                </div>
+                <div class="component-card">
+                    <span class="flow-badge flow-core">Core</span>
+                    <h3>📋 Custom Rules Engine</h3>
+                    <p>YAML/JSON rule definitions with magic bytes (offset+pattern+mask), regex (pre-compiled), extension matching. Priority-based ordering (highest first). Hot-reload without restart. 47 built-in rules across 3 African domains.</p>
+                </div>
+                <div class="component-card">
+                    <span class="flow-badge flow-core">Core</span>
+                    <h3>💾 LRU Cache</h3>
+                    <p>Content-addressable cache (SHA-256 of first 8KB + file size). Configurable size (default 1024). Sync version uses simple dict; async version uses asyncio.Lock for thread-safety. Hit rates typically 15-40% in batch workloads.</p>
+                </div>
+                <div class="component-card">
+                    <span class="flow-badge flow-core">Core</span>
+                    <h3>📊 Benchmark Runner</h3>
+                    <p>Configurable iterations, warmup, concurrency levels, file sizes. Measures latency (avg/median/p95/p99), throughput, memory (psutil), CPU. Compares against python-magic, mimetypes, file(1). JSON output for CI regression detection.</p>
+                </div>
+                <div class="component-card">
+                    <span class="flow-badge flow-sync">Upstream</span>
+                    <h3>🦀 Upstream magika</h3>
+                    <p>Google's original: Rust core with tract ONNX runtime (~5ms inference), PyO3 bindings for zero-copy Python integration, 200+ content types, 3 prediction modes, overwrite rule system.</p>
+                </div>
+                <div class="component-card">
+                    <span class="flow-badge flow-core">Rules</span>
+                    <h3>🌍 African Domain Rules</h3>
+                    <p>47 rules total: 12 Mobile Money (M-Pesa, Airtel, MTN MoMo, Orange, EcoCash, Wave, PesaLink), 10 Healthcare (HL7 v2/v3, FHIR, DICOM, CDA, X12), 16 Logistics (EDIFACT, GS1 EPCIS/CBV, Customs, eBL, eAWB).</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="details-panel">
+            <h2>🔄 Data Flows</h2>
+            <div class="component-grid">
+                <div class="component-card">
+                    <h3>🔵 Sync Identification</h3>
+                    <p><code>identify_path(path)</code> → Check LRU cache → Cache hit: return cached result → Cache miss: <code>upstream.identify_path()</code> in thread pool → Apply custom rules → Cache result → Return <code>MagikaResult</code></p>
+                </div>
+                <div class="component-card">
+                    <h3>🟣 Async Identification</h3>
+                    <p><code>await identify_path(path)</code> → Check async LRU cache (asyncio.Lock) → Cache hit: return → Cache miss: <code>run_in_executor(upstream.identify_path)</code> → Apply custom rules → Cache result → Return</p>
+                </div>
+                <div class="component-card">
+                    <h3>🟢 Batch Async</h3>
+                    <p><code>await identify_paths(paths, max_concurrent=50)</code> → Create Semaphore(50) → Spawn tasks with semaphore → <code>asyncio.gather(*tasks)</code> → Results in order → Progress callback support</p>
+                </div>
+                <div class="component-card">
+                    <h3>🟠 MCP Tool Call</h3>
+                    <p>JSON-RPC request → Validate with Pydantic → Route to MagikaAsync method → Return formatted TextContent → JSON-RPC response. Schema validation on all inputs/outputs.</p>
+                </div>
+                <div class="component-card">
+                    <h3>🟡 Custom Rule Match</h3>
+                    <p><code>match(content, path)</code> → For each rule by priority: 1) Magic bytes (offset+pattern) 2) Regex (pre-compiled) 3) Extension (if path) → Return first match or None → Upstream handles non-matches</p>
+                </div>
+                <div class="component-card">
+                    <h3>🔴 Benchmark Run</h3>
+                    <p>Generate fixtures → Warmup runs → Timed iterations (perf_counter) → Memory/CPU sampling (psutil) → Statistics (mean, median, stddev) → Compare tools → JSON output → Regression check</p>
+                </div>
+            </div>
+        </div>
+
+        <footer style="text-align:center;margin-top:40px;padding:20px;color:#8b949e;font-size:13px;border-top:1px solid #30363d">
+            <p>magika-enhanced — Enhanced AI file detection for modern workflows</p>
+            <p><a href="https://github.com/nakisisageorge/magika-enhanced" style="color:#58a6ff">GitHub</a> • <a href="https://gictafrica.com" style="color:#58a6ff">GICT Africa Technologies</a> • George Nakisisa</p>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#238636',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#2ea043',
+                lineColor: '#58a6ff',
+                secondaryColor: '#a371f7',
+                tertiaryColor: '#1f6feb',
+                background: '#161b22',
+                mainBkg: '#161b22',
+                secondBkg: '#0d1117',
+                tertiaryBkg: '#21262d'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+                nodeSpacing: 50,
+                rankSpacing: 70
+            },
+            securityLevel: 'loose'
+        });
+
+        let currentZoom = 1;
+        const diagram = document.getElementById('architecture-diagram');
+
+        function zoomIn() {
+            currentZoom = Math.min(currentZoom * 1.2, 3);
+            applyZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(currentZoom / 1.2, 0.3);
+            applyZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            diagram.style.transform = `scale(${currentZoom})`;
+            diagram.style.transformOrigin = 'top center';
+        }
+
+        function downloadSVG() {
+            const svg = diagram.querySelector('svg');
+            if (svg) {
+                const serializer = new XMLSerializer();
+                const source = serializer.serializeToString(svg);
+                const blob = new Blob([source], {type: 'image/svg+xml'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'magika-enhanced-architecture.svg';
+                a.click();
+                URL.revokeObjectURL(url);
+            } else {
+                alert('Diagram not rendered yet. Please wait.');
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === '=' || e.key === '+') { e.preventDefault(); zoomIn(); }
+                if (e.key === '-') { e.preventDefault(); zoomOut(); }
+                if (e.key === '0') { e.preventDefault(); resetZoom(); }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+# Logistics & Supply Chain Content Types
+# Custom rules for logistics data formats (EDIFACT, GS1, customs, tracking)
+
+name: "logistics"
+version: "1.0"
+description: "Content type rules for logistics, supply chain, and freight data formats"
+metadata:
+  domain: "logistics"
+  standards: ["EDIFACT", "GS1", "ANSI X12", "IATA", "WCO", "Customs"]
+
+rules:
+  - name: "edifact_message"
+    label: "EDIFACT_MESSAGE"
+    group: "logistics"
+    mime_type: "application/edifact"
+    extensions: [".edi", ".edifact", ".un"]
+    regex: "^UNA[.:+?']|^UNH\\+"
+    description: "UN/EDIFACT interchange message"
+    is_text: true
+    priority: 100
+    metadata:
+      standard: "EDIFACT"
+      versions: ["D97A", "D98B", "D00B", "D01C", "D02B", "D03A", "D04B", "D05A", "D06A", "D07A", "D08A", "D09A", "D10A", "D11A", "D12A", "D13A", "D14A", "D15A", "D16A", "D17A", "D18A", "D19A", "D20A", "D21A", "D22A", "D23A", "D24A"]
+
+  - name: "edifact_iftmcs"
+    label: "EDIFACT_IFTMCS"
+    group: "logistics"
+    mime_type: "application/edifact"
+    extensions: [".iftmcs", ".edifact"]
+    regex: "^UNH\\+[^+]+\\+IFTMCS:"
+    description: "EDIFACT IFTMCS - International Forwarding and Transport Message"
+    is_text: true
+    priority: 95
+    metadata:
+      standard: "EDIFACT"
+      message_type: "IFTMCS"
+
+  - name: "edifact_iftdgn"
+    label: "EDIFACT_IFTDGN"
+    group: "logistics"
+    mime_type: "application/edifact"
+    extensions: [".iftdgn", ".edifact"]
+    regex: "^UNH\\+[^+]+\\+IFTDGN:"
+    description: "EDIFACT IFTDGN - Dangerous Goods Notification"
+    is_text: true
+    priority: 95
+    metadata:
+      standard: "EDIFACT"
+      message_type: "IFTDGN"
+
+  - name: "edifact_iata"
+    label: "EDIFACT_IATA"
+    group: "logistics"
+    mime_type: "application/edifact"
+    extensions: [".iata", ".edifact"]
+    regex: "^UNH\\+[^+]+\\+(CARGO|FWB|FHL|AWB|FZB):"
+    description: "EDIFACT IATA Cargo messages (FWB, FHL, AWB, FZB)"
+    is_text: true
+    priority: 90
+    metadata:
+      standard: "EDIFACT/IATA"
+      message_types: ["FWB", "FHL", "AWB", "FZB"]
+
+  - name: "gs1_epcis_event"
+    label: "GS1_EPCIS_EVENT"
+    group: "logistics"
+    mime_type: "application/epcis+xml"
+    extensions: [".epcis.xml", ".epcis"]
+    magic_bytes:
+      offset: 0
+      pattern: "3c3f786d6c"  # "<?xml"
+    regex: "<EPCISDocument[^>]*xmlns=\"urn:epcglobal:epcis"
+    description: "GS1 EPCIS (Electronic Product Code Information Services) event data"
+    is_text: true
+    priority: 100
+    metadata:
+      standard: "GS1 EPCIS"
+      versions: ["1.1", "1.2", "2.0"]
+
+  - name: "gs1_cbv_event"
+    label: "GS1_CBV_EVENT"
+    group: "logistics"
+    mime_type: "application/cbv+xml"
+    extensions: [".cbv.xml", ".cbv"]
+    magic_bytes:
+      offset: 0
+      pattern: "3c3f786d6c"
+    regex: "<cbv:EPCISDocument[^>]*xmlns:cbv=\"urn:epcglobal:cbv"
+    description: "GS1 CBV (Core Business Vocabulary) for EPCIS"
+    is_text: true
+    priority: 95
+    metadata:
+      standard: "GS1 CBV"
+
+  - name: "gs1_gtin_barcode"
+    label: "GS1_GTIN_BARCODE"
+    group: "logistics"
+    mime_type: "text/plain; profile=gs1-gtin"
+    extensions: [".gtin", ".ean", ".upc"]
+    regex: "^(0[1-9]|[1-9][0-9])[0-9]{11,13}$"
+    description: "GS1 GTIN (Global Trade Item Number) - EAN/UPC"
+    is_text: true
+    priority: 85
+    metadata:
+      standard: "GS1"
+      formats: ["GTIN-8", "GTIN-12", "GTIN-13", "GTIN-14"]
+
+  - name: "gs1_sscc_barcode"
+    label: "GS1_SSCC_BARCODE"
+    group: "logistics"
+    mime_type: "text/plain; profile=gs1-sscc"
+    extensions: [".sscc", ".gs1-128"]
+    regex: "^00[0-9]{16}$"
+    description: "GS1 SSCC (Serial Shipping Container Code) - GS1-128"
+    is_text: true
+    priority: 85
+    metadata:
+      standard: "GS1"
+      format: "SSCC-18"
+
+  - name: "gs1_gdti"
+    label: "GS1_GDTI"
+    group: "logistics"
+    mime_type: "text/plain; profile=gs1-gdti"
+    extensions: [".gdti"]
+    regex: "^253[0-9]{14,}$"
+    description: "GS1 GDTI (Global Document Type Identifier)"
+    is_text: true
+    priority: 80
+    metadata:
+      standard: "GS1"
+
+  - name: "customs_declaration"
+    label: "CUSTOMS_DECLARATION"
+    group: "logistics"
+    mime_type: "application/customs+xml"
+    extensions: [".cusdec", ".customs.xml", ".sad"]
+    magic_bytes:
+      offset: 0
+      pattern: "3c3f786d6c"  # "<?xml"
+    regex: "<(CustomsDeclaration|GoodsDeclaration|SAD|SingleAdministrativeDocument)"
+    description: "WCO Customs Declaration (Single Administrative Document)"
+    is_text: true
+    priority: 95
+    metadata:
+      standard: "WCO Data Model"
+      versions: ["3.0", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.0"]
+
+  - name: "cargo_manifest"
+    label: "CARGO_MANIFEST"
+    group: "logistics"
+    mime_type: "application/manifest+xml"
+    extensions: [".manifest.xml", ".cargo.xml", ".manifest"]
+    magic_bytes:
+      offset: 0
+      pattern: "3c3f786d6c"
+    regex: "<(CargoManifest|VesselManifest|AirManifest|TruckManifest)"
+    description: "Cargo manifest for sea/air/land transport"
+    is_text: true
+    priority: 90
+    metadata:
+      transport_modes: ["sea", "air", "land", "rail"]
+
+  - name: "bill_of_lading"
+    label: "BILL_OF_LADING"
+    group: "logistics"
+    mime_type: "application/bol+xml"
+    extensions: [".bol.xml", ".bol", ".bl"]
+    magic_bytes:
+      offset: 0
+      pattern: "3c3f786d6c"
+    regex: "<BillOfLading[^>]*>"
+    description: "Electronic Bill of Lading (eBL)"
+    is_text: true
+    priority: 95
+    metadata:
+      standard: "DCSA eBL"
+      versions: ["1.0", "2.0", "3.0"]
+
+  - name: "air_waybill"
+    label: "AIR_WAYBILL"
+    group: "logistics"
+    mime_type: "application/awb+xml"
+    extensions: [".awb.xml", ".awb", ".mawb", ".hawb"]
+    magic_bytes:
+      offset: 0
+      pattern: "3c3f786d6c"
+    regex: "<(AirWaybill|MAWB|HAWB)[^>]*>"
+    description: "Electronic Air Waybill (eAWB) - IATA"
+    is_text: true
+    priority: 95
+    metadata:
+      standard: "IATA eAWB"
+      versions: ["1.0", "2.0", "3.0", "4.0"]
+
+  - name: "tracking_event"
+    label: "TRACKING_EVENT"
+    group: "logistics"
+    mime_type: "application/tracking+json"
+    extensions: [".tracking.json", ".track.json"]
+    regex: '"(trackingNumber|shipmentId|eventCode|eventTime|location)"'
+    description: "Shipment tracking event (JSON)"
+    is_text: true
+    priority: 85
+    metadata:
+      carriers: ["DHL", "FedEx", "UPS", "Maersk", "MSC", "CMA CGM", "Hapag-Lloyd", "ONE", "COSCO"]
+
+  - name: "iot_sensor_logistics"
+    label: "IOT_SENSOR_LOGISTICS"
+    group: "logistics"
+    mime_type: "application/iot+json"
+    extensions: [".iot.json", ".sensor.json", ".telemetry.json"]
+    regex: '"(deviceId|sensorId|temperature|humidity|gps|latitude|longitude|shock|tilt)"'
+    description: "IoT sensor data for logistics (cold chain, shock, GPS)"
+    is_text: true
+    priority: 80
+    metadata:
+      sensors: ["temperature", "humidity", "GPS", "shock", "tilt", "light", "pressure"]
+
+  - name: "warehouse_receipt"
+    label: "WAREHOUSE_RECEIPT"
+    group: "logistics"
+    mime_type: "application/wreceipt+xml"
+    extensions: [".wrec.xml", ".warehouse.xml"]
+    magic_bytes:
+      offset: 0
+      pattern: "3c3f786d6c"
+    regex: "<WarehouseReceipt[^>]*>"
+    description: "Electronic Warehouse Receipt (eWHR)"
+    is_text: true
+    priority: 85
+    metadata:
+      standard: "UNECE eWHR"
+
+  - name: "freight_invoice"
+    label: "FREIGHT_INVOICE"
+    group: "logistics"
+    mime_type: "application/freight-invoice+xml"
+    extensions: [".finv.xml", ".freight.xml"]
+    magic_bytes:
+      offset: 0
+      pattern: "3c3f786d6c"
+    regex: "<FreightInvoice[^>]*>"
+    description: "Electronic Freight Invoice"
+    is_text: true
+    priority: 85
+    metadata:
+      standard: "EDIFACT INVOIC / ANSI X12 210"
+
+  - name: "container_status"
+    label: "CONTAINER_STATUS"
+    group: "logistics"
+    mime_type: "application/container-status+json"
+    extensions: [".container.json", ".cstatus.json"]
+    regex: '"(containerNumber|isoCode|status|location|terminal|vessel|voyage)"'
+    description: "Container status update (terminal operations)"
+    is_text: true
+    priority: 80
+    metadata:
+      statuses: ["gate_in", "gate_out", "loaded", "discharged", "stacked", "customs_hold", "available"]
